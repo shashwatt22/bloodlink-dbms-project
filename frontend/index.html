@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BloodLink Premium Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fa-solid fa-droplet"></i> BloodLink</h2>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="#" class="nav-link active" data-target="dashboard-view"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+      <li><a href="#" class="nav-link" data-target="donors-view"><i class="fa-solid fa-users"></i> Donors</a></li>
+      <li><a href="#" class="nav-link" data-target="inventory-view"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a></li>
+      <li><a href="#" class="nav-link" data-target="requests-view"><i class="fa-solid fa-truck-medical"></i> Requests</a></li>
+      <li><a href="#" class="nav-link" data-target="admin-view"><i class="fa-solid fa-user-shield"></i> Admin Forms</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header>
+      <div class="header-title">
+        <h1 id="page-title">Dashboard Overview</h1>
+      </div>
+      <div class="header-profile">
+        <span>Admin User</span>
+        <img src="https://ui-avatars.com/api/?name=Admin+User&background=d32f2f&color=fff" alt="Admin">
+      </div>
+    </header>
+
+    <div class="content-area">
+      <div id="alertBox" class="alert"></div>
+
+      <!-- DASHBOARD VIEW -->
+      <section id="dashboard-view" class="view-section active">
+        <div class="hero-banner">
+          <div class="hero-content">
+            <h2>Smart Blood Bank Management System</h2>
+            <p>Saving Lives Through Better Data Management and Instant Tracking</p>
+          </div>
+          <div class="hero-icon">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-details">
+              <h3>Total Donors</h3>
+              <p id="stat-total-donors">--</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-droplet"></i></div>
+            <div class="stat-details">
+              <h3>Available Units</h3>
+              <p id="stat-available-units">--</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div class="stat-details">
+              <h3>Eligible Donors</h3>
+              <p id="stat-eligible-donors">--</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="color: var(--danger-color); background-color: rgba(231,76,60,0.1);"><i class="fa-solid fa-truck-medical"></i></div>
+            <div class="stat-details">
+              <h3>Emergency Requests</h3>
+              <p id="stat-emergency-requests">--</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Hospital Requests</h3>
+            <button class="btn btn-primary btn-sm" onclick="fetchRecentRequests()">Refresh</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Hospital Name</th>
+                  <th>Blood Group</th>
+                  <th>Qty</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="recent-requests-table">
+                <!-- Data populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- DONORS VIEW -->
+      <section id="donors-view" class="view-section">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-list"></i> All Donors Registry</h3>
+            <button class="btn btn-primary" onclick="fetchDonors()"><i class="fa-solid fa-rotate"></i> Load Data</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Blood Group</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody id="donors-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-user-check"></i> Eligible Donors</h3>
+            <button class="btn btn-primary" onclick="fetchEligibleDonors()"><i class="fa-solid fa-rotate"></i> Load Data</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Donor ID</th>
+                  <th>Name</th>
+                  <th>Blood Group</th>
+                  <th>Next Eligible Date</th>
+                </tr>
+              </thead>
+              <tbody id="eligible-donors-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- INVENTORY VIEW -->
+      <section id="inventory-view" class="view-section">
+        <div class="stats-grid">
+          <div class="card" style="margin-bottom:0">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Alert</h3>
+              <button class="btn btn-primary" onclick="fetchLowStock()"><i class="fa-solid fa-rotate"></i></button>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Blood Group</th>
+                    <th>Available Units</th>
+                  </tr>
+                </thead>
+                <tbody id="low-stock-table"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:0">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-hourglass-half"></i> Expiring Soon</h3>
+              <button class="btn btn-primary" onclick="fetchExpiringSoon()"><i class="fa-solid fa-rotate"></i></button>
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Unit ID</th>
+                    <th>Blood Group</th>
+                    <th>Expiry Date</th>
+                  </tr>
+                </thead>
+                <tbody id="expiring-soon-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 30px;">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-boxes-stacked"></i> Full Blood Inventory</h3>
+            <button class="btn btn-primary" onclick="fetchInventory()"><i class="fa-solid fa-rotate"></i> Load Data</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Unit ID</th>
+                  <th>Blood Group</th>
+                  <th>Donation Date</th>
+                  <th>Expiry Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- REQUESTS VIEW -->
+      <section id="requests-view" class="view-section">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-file-medical"></i> Submit Hospital Blood Request</h3>
+          </div>
+          <form id="form-request">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Hospital ID</label>
+                <input type="number" name="hospital_id" class="form-control" required placeholder="Enter Hospital ID">
+              </div>
+              <div class="form-group">
+                <label>Blood Group</label>
+                <select name="blood_group" class="form-control" required>
+                  <option value="">Select Group</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Quantity (Units)</label>
+                <input type="number" name="quantity" class="form-control" required min="1" placeholder="Number of units">
+              </div>
+              <div class="form-group">
+                <label>Request Type</label>
+                <select name="request_type" class="form-control" required>
+                  <option value="Normal">Normal</option>
+                  <option value="Emergency">Emergency</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Request</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ADMIN FORMS VIEW -->
+      <section id="admin-view" class="view-section">
+        
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-user-plus"></i> Register New Donor</h3>
+          </div>
+          <form id="form-donor">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="age" class="form-control" required min="18">
+              </div>
+              <div class="form-group">
+                <label>Gender</label>
+                <select name="gender" class="form-control" required>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Blood Group</label>
+                <select name="blood_group" class="form-control" required>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" class="form-control" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Register Donor</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-syringe"></i> Record Blood Donation</h3>
+          </div>
+          <form id="form-donation">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Donor ID</label>
+                <input type="number" name="donor_id" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Blood Group</label>
+                <select name="blood_group" class="form-control" required>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Donation Date</label>
+                <input type="date" name="donation_date" class="form-control" required id="donation-date-input">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Record Donation</button>
+          </form>
+        </div>
+
+        <div class="card" style="border: 2px solid var(--primary-light);">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-truck-fast"></i> Admin Issue Blood (Stored Procedure)</h3>
+          </div>
+          <form id="form-issue">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Requested Blood Group</label>
+                <select name="blood_group" class="form-control" required>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 15px;"><i class="fa-solid fa-share-from-square"></i> CALL Issue_Blood()</button>
+          </form>
+        </div>
+
+      </section>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
